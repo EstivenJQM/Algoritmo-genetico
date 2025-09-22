@@ -3,6 +3,7 @@ from tkinter import ttk
 import random as rand
 import threading
 import time
+import string
 
 # Caracteres posibles
 origen = " abcdefghijklmnñopqrstuvwxyzABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
@@ -62,8 +63,11 @@ class App:
         self.root = root
         self.root.title("Algoritmo Genético - Visualizador")
 
+        # Configurar margen
+        root.configure(padx=20, pady=20)
+
         # Entrada de texto
-        ttk.Label(root, text="Frase objetivo:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        ttk.Label(root, text="Frase objetivo:", font=("Segoe UI", 12)).grid(row=0, column=0, padx=5, pady=5, sticky="e")
         self.entry_destino = ttk.Entry(root, width=30)
         self.entry_destino.grid(row=0, column=1, padx=5, pady=5)
 
@@ -72,22 +76,22 @@ class App:
         self.boton_iniciar.grid(row=0, column=2, padx=5, pady=5)
 
         # Frase actual
-        self.label_frase_actual = ttk.Label(root, text="", font=("Courier", 20, "bold"), foreground="blue")
+        self.label_frase_actual = ttk.Label(root, text="", font=("Segoe UI", 20, "bold"))
         self.label_frase_actual.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
 
         # Generación y adaptación
-        self.label_generacion = ttk.Label(root, text="Generación: 0", font=("Arial", 12))
+        self.label_generacion = ttk.Label(root, text="Generación: 0", font=("Segoe UI", 12))
         self.label_generacion.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
-        self.label_adaptacion = ttk.Label(root, text="Adaptación: 0", font=("Arial", 12))
+        self.label_adaptacion = ttk.Label(root, text="Adaptación: 0", font=("Segoe UI", 12))
         self.label_adaptacion.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
         # Padre inicial
-        self.label_padre = ttk.Label(root, text="Padre inicial:", font=("Arial", 10))
+        self.label_padre = ttk.Label(root, text="Padre inicial:", font=("Segoe UI", 12))
         self.label_padre.grid(row=3, column=0, columnspan=3, padx=5, pady=10, sticky="w")
 
         # Estado del algoritmo (cuando termina)
-        self.label_estado = ttk.Label(root, text="", font=("Arial", 12, "bold"), foreground="green")
+        self.label_estado = ttk.Label(root, text="", font=("Segoe UI", 12, "bold"), foreground="green")
         self.label_estado.grid(row=4, column=0, columnspan=3, padx=5, pady=10)
 
     def actualizar_interfaz(self, frase_actual, generacion, adaptacion, padre=None):
@@ -99,7 +103,7 @@ class App:
         self.root.update_idletasks()
 
     def mostrar_finalizado(self):
-        self.label_estado.config(text="✅ Frase encontrada.")
+        self.label_estado.config(text="Frase encontrada.")
         self.boton_iniciar.config(state=tk.NORMAL)
 
     def iniciar(self):
@@ -112,7 +116,7 @@ class App:
         self.label_generacion.config(text="Generación: 0")
         self.label_adaptacion.config(text="Adaptación: 0")
         self.label_padre.config(text="Padre inicial:")
-        self.label_estado.config(text="⏳ Buscando...")
+        self.label_estado.config(text="Buscando...")
         self.boton_iniciar.config(state=tk.DISABLED)
 
         # Iniciar hilo del algoritmo genético
