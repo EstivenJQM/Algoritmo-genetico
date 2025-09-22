@@ -25,7 +25,7 @@ def definirPoblacion(longitud):
     return rand.sample(origen * 2, longitud)
 
 # Función que corre el algoritmo genético
-def ejecutar_algoritmo(destino, update_callback):
+def ejecutar_algoritmo(destino, update_callback, final_callback):
     padre = definirPoblacion(len(destino))
     adaptacionPadre = funcionObjetivo(padre, destino)
     cont = 0
@@ -48,10 +48,13 @@ def ejecutar_algoritmo(destino, update_callback):
             update_callback(frase_actual="".join(hijo),
                             generacion=cont,
                             adaptacion=adaptacionHijo,
-                            padre=None)  # no volver a cambiar el padre
+                            padre=None)
 
         if adaptacionHijo >= len(destino):
             break
+
+    # Llamar callback final al terminar
+    final_callback()
 
 # Interfaz gráfica
 class App:
@@ -68,7 +71,7 @@ class App:
         self.boton_iniciar = ttk.Button(root, text="Iniciar", command=self.iniciar)
         self.boton_iniciar.grid(row=0, column=2, padx=5, pady=5)
 
-        # Frase actual (estilo grande tipo demo online)
+        # Frase actual
         self.label_frase_actual = ttk.Label(root, text="", font=("Courier", 20, "bold"), foreground="blue")
         self.label_frase_actual.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
 
@@ -83,6 +86,10 @@ class App:
         self.label_padre = ttk.Label(root, text="Padre inicial:", font=("Arial", 10))
         self.label_padre.grid(row=3, column=0, columnspan=3, padx=5, pady=10, sticky="w")
 
+        # Estado del algoritmo (cuando termina)
+        self.label_estado = ttk.Label(root, text="", font=("Arial", 12, "bold"), foreground="green")
+        self.label_estado.grid(row=4, column=0, columnspan=3, padx=5, pady=10)
+
     def actualizar_interfaz(self, frase_actual, generacion, adaptacion, padre=None):
         self.label_frase_actual.config(text=frase_actual)
         self.label_generacion.config(text=f"Generación: {generacion}")
@@ -91,9 +98,13 @@ class App:
             self.label_padre.config(text=f"Padre inicial: {padre}")
         self.root.update_idletasks()
 
+    def mostrar_finalizado(self):
+        self.label_estado.config(text="✅ Frase encontrada.")
+        self.boton_iniciar.config(state=tk.NORMAL)
+
     def iniciar(self):
-        destino = self.entry_destino.get()
-        if not destino.strip():
+        destino = self.entry_destino.get().strip()
+        if not destino:
             return
 
         # Limpiar etiquetas
@@ -101,11 +112,13 @@ class App:
         self.label_generacion.config(text="Generación: 0")
         self.label_adaptacion.config(text="Adaptación: 0")
         self.label_padre.config(text="Padre inicial:")
+        self.label_estado.config(text="⏳ Buscando...")
+        self.boton_iniciar.config(state=tk.DISABLED)
 
         # Iniciar hilo del algoritmo genético
         hilo = threading.Thread(
             target=ejecutar_algoritmo,
-            args=(destino, self.actualizar_interfaz),
+            args=(destino, self.actualizar_interfaz, self.mostrar_finalizado),
             daemon=True
         )
         hilo.start()
