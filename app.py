@@ -62,9 +62,10 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Algoritmo Genético - Visualizador")
-
-        # Configurar margen
+        
+        # Configurar margen de 20px para toda la ventana
         root.configure(padx=20, pady=20)
+
 
         # Entrada de texto
         ttk.Label(root, text="Frase objetivo:", font=("Segoe UI", 12)).grid(row=0, column=0, padx=5, pady=5, sticky="e")
@@ -97,7 +98,18 @@ class App:
     def actualizar_interfaz(self, frase_actual, generacion, adaptacion, padre=None):
         self.label_frase_actual.config(text=frase_actual)
         self.label_generacion.config(text=f"Generación: {generacion}")
-        self.label_adaptacion.config(text=f"Adaptación: {adaptacion}")
+        
+        # Calcular letras correctas y porcentaje
+        destino = self.entry_destino.get().strip()
+        if destino and frase_actual:
+            letras_correctas = sum(1 for i, c in enumerate(frase_actual) if i < len(destino) and c == destino[i])
+            total_letras = len(destino)
+            porcentaje = (letras_correctas / total_letras * 100) if total_letras > 0 else 0
+            
+            self.label_adaptacion.config(text=f"Adaptación: {letras_correctas}/{total_letras} - {porcentaje:.1f}%")
+        else:
+            self.label_adaptacion.config(text=f"Adaptación: {adaptacion}")
+            
         if padre is not None:
             self.label_padre.config(text=f"Padre inicial: {padre}")
         self.root.update_idletasks()
